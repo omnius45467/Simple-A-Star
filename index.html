@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Learning</title>
+</head>
+<body>
+
+<div id="example1" class="example">
+    <h2>A* Search</h2>
+    <canvas id="life-example1" class="life-game">
+        Please view this in a modern browser such as Google Chrome, Firefox, or Safari.
+    </canvas>
+    <button type="button" class="toggle">Play/Stop</button>
+    <button type="button" class="step">1 Step</button>
+</div>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+
+<script>window.jQuery || document.write('<script src="examples/js/libs/jquery-1.7.1.min.js"><\/script>')</script>
+<script src="gameoflife.js"></script>
+<script src="a-star.js"></script>
+
+<script>
+    //    var sample = [
+    //        [1,1,1,1,1,1,1,1,1,1],
+    //        [1,1,1,1,1,1,1,1,1,1],
+    //        [1,1,1,1,0,1,1,1,1,1],
+    //        [1,1,1,1,0,1,1,1,1,1],
+    //        [1,1,1,1,0,1,1,1,1,1],
+    //        [1,1,1,1,1,1,1,1,1,1],
+    //        [1,1,1,1,1,1,1,1,1,1],
+    //        [1,1,1,1,1,1,1,1,1,1],
+    //        [1,1,1,1,1,1,1,1,1,1],
+    //        [1,1,1,1,1,1,1,1,1,1]
+    //    ];
+    var sample = [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    ];
+    var graph = new Graph(sample);
+
+    function generateGoal(graph, start, end) {
+
+        console.log("____________");
+
+        console.log("Goal: " + end);
+
+        var result = astar.search(graph, start, end);
+
+        for (var i = 0, len = result.length; i < len; i++) {
+            console.log(result[i]);
+        }
+        console.log("factor: " + result.length);
+
+    }
+    function getIndex(sample) {
+        var random_x = Math.floor(Math.random() * sample[0].length);
+        var random_y = Math.floor(Math.random() * sample.length);
+        return [random_x, random_y];
+    }
+
+
+</script>
+<script>
+    var i = 0;
+    var start = graph.grid[0][0];
+    var end = graph.grid[getIndex(sample)[0]][getIndex(sample)[1]];
+
+    function game_toggle(game, force) {
+        var interval = game.getInterval();
+        if (force == "stop" || interval !== null) {
+            // Stop
+            clearInterval(interval);
+            game.setTheInterval(null);
+        } else {
+            // start
+//            interval = setInterval(game.step, 100);
+            interval = game.step;
+            game.setTheInterval(interval);
+
+        }
+        while(i < 10){
+            generateGoal(graph, start, end);
+            start = end;
+            end = graph.grid[getIndex(sample)[0]][getIndex(sample)[1]];
+            i++;
+        }
+    }
+
+    function add_listeners(game, example_num) {
+        $("#" + example_num + " .toggle, #" + example_num + " canvas").click(function () {
+            game_toggle(game);
+        });
+        $("#" + example_num + " .step").click(function () {
+            game_toggle(game, "stop");
+            game.step();
+        });
+    }
+    var game1 = new GameOfLife({
+        canvas_id: "life-example1",
+        cell_width: 10,
+        cell_height: 10,
+        init_cells: sample
+    });
+    add_listeners(game1, "example1");
+</script>
+</body>
+</html>
